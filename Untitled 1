@@ -1,0 +1,6 @@
+	public long getSpecificStudentClass(String studentId) {
+		String hql = "SELECT S FROM SchoolClass S  INNER JOIN S.students student WHERE student.id="+studentId;
+		Query query = session.createQuery(hql);
+		SchoolClass sclass = (SchoolClass) query.list().get(0);
+		return sclass.getId();
+	}
