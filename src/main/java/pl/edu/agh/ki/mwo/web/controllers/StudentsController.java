@@ -72,5 +72,29 @@ public class StudentsController {
 	}
 	
 	
+	@RequestMapping(value = "/ModifyStudent", method = RequestMethod.POST)
+	public String modifyStudent(@RequestParam(value = "studentId", required = false) String studentId,
+			@RequestParam(value = "studentName", required = false) String name,
+			@RequestParam(value = "studentSurname", required = false) String surname,
+			@RequestParam(value = "studentPesel", required = false) String pesel,
+			@RequestParam(value = "studentSchoolClass", required = false) String classId,
+			Model model, HttpSession session) {
+		if (session.getAttribute("userLogin") == null)
+			return "redirect:/Login";
+
+		
+		Student stud = new Student();
+		stud.setName("KKKK");
+		stud.setSurname(surname);
+		stud.setPesel(pesel);
+		DatabaseConnector.getInstance().addStudent(stud, classId);
+		
+		model.addAttribute("students", DatabaseConnector.getInstance().getStudents());
+		model.addAttribute("message", "Student został zmodyfikowany");
+
+		return "studentsList";
+
+	}
+	
 
 }
