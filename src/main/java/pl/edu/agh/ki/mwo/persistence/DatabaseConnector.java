@@ -126,13 +126,51 @@ public class DatabaseConnector {
 		transaction.commit();
 		
 	}
+	
+
 
 	
-	public long getSpecificStudentClass(String studentId) {
+	public Student getStudent(String studentId) {
+		String hql = "FROM Student S WHERE S.id=" + studentId;
+		Query query = session.createQuery(hql);
+		Student stud = (Student) query.list().get(0);
+		return stud;
+	}
+
+	public SchoolClass getStudentClass(String studentId) {
+		String hql = "SELECT S FROM SchoolClass S  INNER JOIN S.students student WHERE student.id="+studentId;
+		Query query = session.createQuery(hql);
+		SchoolClass sclass = (SchoolClass) query.list().get(0);
+		return sclass;
+	}
+	
+	public Long getStudentClassId(String studentId) {
 		String hql = "SELECT S FROM SchoolClass S  INNER JOIN S.students student WHERE student.id="+studentId;
 		Query query = session.createQuery(hql);
 		SchoolClass sclass = (SchoolClass) query.list().get(0);
 		return sclass.getId();
 	}
+
+	public School getSchool(Long schoolId) {
+		String hql = "FROM School S WHERE S.id=" + schoolId;
+		Query query = session.createQuery(hql);
+		School school = (School) query.list().get(0);
+		return school;
+	}
+
+	public SchoolClass getSchoolClass(String schoolClassId) {
+		String hql = "FROM SchoolClass S WHERE S.id=" + schoolClassId;
+		Query query = session.createQuery(hql);
+		SchoolClass sc = (SchoolClass) query.list().get(0);
+		return sc;
+	}
+
+	public School getSchoolClassSchool(String schoolClassId) {
+		String hql = "SELECT s FROM School s INNER JOIN s.classes classes WHERE classes.id="+schoolClassId;
+		Query query = session.createQuery(hql);
+		School school = (School) query.list().get(0);
+		return school;
+	}
+
 
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.edu.agh.ki.mwo.model.School;
+import pl.edu.agh.ki.mwo.model.Student;
 import pl.edu.agh.ki.mwo.persistence.DatabaseConnector;
 
 @Controller
@@ -62,6 +63,44 @@ public class SchoolsController {
          	
     	return "schoolsList";
     }
+    
+    @RequestMapping(value="/FillFormSchool")
+   public String fillFormSchool(@RequestParam(value="schoolId", required=false) Long schoolId,
+    		Model model, HttpSession session) {    	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	School school = DatabaseConnector.getInstance().getSchool(schoolId);
+    	model.addAttribute("schoolName", school.getName());
+    	model.addAttribute("schoolAddress", school.getAddress());
+    	model.addAttribute("schoolId", school.getId());
+    	
+        return "schoolModifyForm";
+    }
+    
+    @RequestMapping(value="/UpdateSchool", method=RequestMethod.POST)
+    public String updateSchool(@RequestParam(value="schoolName", required=false) String schoolName,
+    		@RequestParam(value="schoolAddress", required=false) String schoolAddress,
+    		@RequestParam(value="schoolId", required=false) Long schoolId,
+    		
+    		
+    		Model model, HttpSession session)
+    {   	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	School school = DatabaseConnector.getInstance().getSchool(schoolId);
+    
+    	school.setName(schoolName);
+    	school.setAddress(schoolAddress);
+    	
+    	   
+    	DatabaseConnector.getInstance().addSchool(school);
+       	model.addAttribute("schools", DatabaseConnector.getInstance().getSchools());
+    	model.addAttribute("message", "Szkoła została zmieniona");
+         	
+    	return "schoolsList";
+}
 
 
 }

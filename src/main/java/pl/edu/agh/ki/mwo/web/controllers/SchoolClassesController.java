@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pl.edu.agh.ki.mwo.model.School;
 import pl.edu.agh.ki.mwo.model.SchoolClass;
+import pl.edu.agh.ki.mwo.model.Student;
 import pl.edu.agh.ki.mwo.persistence.DatabaseConnector;
 
 @Controller
@@ -69,5 +70,48 @@ public class SchoolClassesController {
     	return "schoolClassesList";
     }
 
+    @RequestMapping(value="/FillFormSchoolClass")
+   public String fillFormSchoolClass(@RequestParam(value="schoolClassId", required=false) String schoolClassId,
+    		Model model, HttpSession session) {    	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	SchoolClass sc = DatabaseConnector.getInstance().getSchoolClass(schoolClassId);
+    	model.addAttribute("schoolClassStartYear", sc.getStartYear());
+    	model.addAttribute("schoolClassCurrentYear", sc.getCurrentYear());
+    	model.addAttribute("schoolClassProfile", sc.getProfile());
+    	model.addAttribute("schoolClassId",  sc.getId());
+    	model.addAttribute("schoolClassSchool",  DatabaseConnector.getInstance().getSchoolClassSchool(schoolClassId));
+    	model.addAttribute("schools", DatabaseConnector.getInstance().getSchools());
+ 
+
+    	
+        return "schoolClassModifyForm";
+    }
+    
+    @RequestMapping(value="/UpdateSchoolClass", method=RequestMethod.POST)
+    public String updateSchoolClass(@RequestParam(value="schoolClassStartYear", required=false) int startYear,
+    		@RequestParam(value="schoolClassCurrentYear", required=false) int currentYear,
+    		@RequestParam(value="schoolClassProfile", required=false) String profile,
+    		@RequestParam(value="schoolClassId", required=false) String id,
+    		@RequestParam(value="schoolClassSchool", required=false) String schoolClassSchool,
+    		Model model, HttpSession session) {    	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	
+    	SchoolClass sc = DatabaseConnector.getInstance().getSchoolClass(id);
+    
+    	sc.setCurrentYear(currentYear);
+    	sc.setStartYear(startYear);
+    	sc.setProfile(profile);
+    	
+    	   
+    	DatabaseConnector.getInstance().addSchoolClass(sc, id);    	
+       	model.addAttribute("schoolClasses", DatabaseConnector.getInstance().getSchoolClasses());
+    	model.addAttribute("message", "Nowa klasa została dodana");
+         	
+    	return "schoolClassesList";
+}
 
 }

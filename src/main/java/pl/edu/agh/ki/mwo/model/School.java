@@ -33,6 +33,10 @@ public class School implements java.io.Serializable {
 	public long getId() {
 		return id;
 	}
+	
+	public String getIdString() {
+		return Long.toString(id);
+	}
 
 	public void setId(long id) {
 		this.id = id;

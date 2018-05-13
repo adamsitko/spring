@@ -72,29 +72,52 @@ public class StudentsController {
 	}
 	
 	
-	@RequestMapping(value = "/ModifyStudent", method = RequestMethod.POST)
-	public String modifyStudent(@RequestParam(value = "studentId", required = false) String studentId,
-			@RequestParam(value = "studentName", required = false) String name,
-			@RequestParam(value = "studentSurname", required = false) String surname,
-			@RequestParam(value = "studentPesel", required = false) String pesel,
-			@RequestParam(value = "studentSchoolClass", required = false) String classId,
-			Model model, HttpSession session) {
-		if (session.getAttribute("userLogin") == null)
-			return "redirect:/Login";
+    @RequestMapping(value="/FillFormStudent")
+   public String fillFormStudent(@RequestParam(value="studentId", required=false) String studentId,
+    		Model model, HttpSession session) {    	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	Student student = DatabaseConnector.getInstance().getStudent(studentId);
+    	model.addAttribute("studentName", student.getName());
+    	model.addAttribute("studentSurname", student.getSurname());
+    	model.addAttribute("studentPesel", student.getPesel());
+    	model.addAttribute("studentId",student.getId());
+    	model.addAttribute("studentClass", DatabaseConnector.getInstance().getStudentClass(studentId));
+    	model.addAttribute("studentClassId",  DatabaseConnector.getInstance().getStudentClassId(studentId));
+    	model.addAttribute("schoolClasses", DatabaseConnector.getInstance().getSchoolClasses());
+ 
 
-		
-		Student stud = new Student();
-		stud.setName("KKKK");
-		stud.setSurname(surname);
-		stud.setPesel(pesel);
-		DatabaseConnector.getInstance().addStudent(stud, classId);
-		
-		model.addAttribute("students", DatabaseConnector.getInstance().getStudents());
-		model.addAttribute("message", "Student został zmodyfikowany");
-
-		return "studentsList";
-
-	}
+    	
+        return "studentModifyForm";
+    }
+    
+    @RequestMapping(value="/UpdateStudent", method=RequestMethod.POST)
+    public String updateStudent(@RequestParam(value="studentName", required=false) String name,
+    		@RequestParam(value="studentSurname", required=false) String surname,
+    		@RequestParam(value="studentPesel", required=false) String pesel,
+    		@RequestParam(value="schoolClassStudent",required=false)  String schoolClassId,
+    		@RequestParam(value="studentId", required=false) String studentId,
+    		
+    		
+    		Model model, HttpSession session) {    	
+    	if (session.getAttribute("userLogin") == null)
+    		return "redirect:/Login";
+    	
+    	
+    	Student student = DatabaseConnector.getInstance().getStudent(studentId);
+    
+    	student.setName(name);
+    	student.setSurname(surname);
+    	student.setPesel(pesel);
+    	
+    	   
+    	DatabaseConnector.getInstance().addStudent(student, schoolClassId);
+       	model.addAttribute("students", DatabaseConnector.getInstance().getStudents());
+    	model.addAttribute("message", "Uczeń został zmieniony");
+         	
+    	return "studentsList";
+}
 	
 
 }
